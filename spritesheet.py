@@ -1,4 +1,4 @@
-"""Week 10 supplied helper — keep your completed Week 9 crop/list methods.
+"""Supplied helper, unchanged since Week 10 — your Week 9 crop/list methods.
 
 frames.py supplies crop rectangles, foot pivots and the background color.
 No cache, loader wrapper or validation framework.

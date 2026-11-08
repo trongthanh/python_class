@@ -1,7 +1,7 @@
-"""Week 10 STARTER — run main.py; fill four physics TODOs in this file.
+"""Week 11 — your finished Week 10 Luffy, plus one supplied rule for ship steps.
 
-Starts with your working Week 9 walking scene. No gravity or jump yet.
-Keep spritesheet.py and frames.py as supplied catch-up code.
+Nothing here knows about the camera. Luffy still lives in WORLD pixels and
+draws on the world surface he was given. This week's TODOs are in world.py.
 """
 import pygame
 
@@ -14,6 +14,7 @@ class Luffy:
     GRAVITY = 850  # Pixels per second added to vertical speed each second.
     JUMP = -350  # Negative goes up. About a 70-pixel jump with this gravity.
     MAX_FALL_SPEED = 650
+    STEP_HEIGHT = 12  # New: walk up small steps; taller ones need a jump.
 
     def __init__(self, surface, center_x, feet_y, platforms=(), floating_platforms=()):
         self.surface = surface
@@ -56,12 +57,14 @@ class Luffy:
                 direction += 1
             if direction != 0:
                 self.facing = direction
+        previous = self.rect.copy()  # New: where the body was before moving.
         self.rect.x += direction * self.SPEED * dt
-        bounds = self.surface.get_rect()
+        bounds = self.surface.get_rect()  # Now the whole ship, not the window.
         if self.rect.left < bounds.left:
             self.rect.left = bounds.left
         if self.rect.right > bounds.right:
             self.rect.right = bounds.right
+        self.climb_or_block(previous, direction)  # New this week, supplied.
 
         # New physics goes before picture selection. Keep the previous FEET height.
         previous_bottom = self.rect.bottom
@@ -70,27 +73,55 @@ class Luffy:
         self.choose_animation(direction, keys)
         self.update_animation(dt)
 
+    def climb_or_block(self, previous, direction):
+        # Supplied Week 11 rule. The ship floor has steps of different heights.
+        # Small step: walk up it. Taller step: it acts as a wall, so jump.
+        for platform in self.platforms:
+            rise = previous.bottom - platform.top  # How far above the feet?
+            if rise <= 0:
+                continue  # Not above the feet: gravity and land() handle it.
+            walked_in_from_left = (direction > 0 and previous.right <= platform.left
+                                   and self.rect.right > platform.left)
+            walked_in_from_right = (direction < 0 and previous.left >= platform.right
+                                    and self.rect.left < platform.right)
+            if not walked_in_from_left and not walked_in_from_right:
+                continue
+            if self.on_ground and rise <= self.STEP_HEIGHT:
+                self.rect.bottom = platform.top  # Step up.
+            elif walked_in_from_left:
+                self.rect.right = platform.left  # Bump: stop at the wall.
+            else:
+                self.rect.left = platform.right
+
     def apply_gravity(self, dt):
-        # STEP 1 — TODO: add self.GRAVITY * dt to self.vy.
-        # Limit self.vy to MAX_FALL_SPEED, then move self.rect.y by self.vy * dt.
-        pass
+        # STEP 1 — acceleration changes speed; speed changes position.
+        self.vy += self.GRAVITY * dt
+        self.vy = min(self.vy, self.MAX_FALL_SPEED)
+        self.rect.y += self.vy * dt
 
     def land(self, previous_bottom):
-        # STEP 2 — TODO: start with self.on_ground = False.
-        # If falling, loop over self.platforms + self.floating_platforms.
-        # Check horizontal overlap AND feet crossing the top from above.
-        # On landing: set rect.bottom, vy = 0.0, on_ground = True.
-        # Do not break: a higher crossed surface must beat the floor.
-        pass
+        # STEP 2 — only feet crossing a top while falling can land.
+        self.on_ground = False
+        if self.vy >= 0:
+            for platform in self.platforms + self.floating_platforms:
+                overlaps_x = self.rect.right > platform.left and self.rect.left < platform.right
+                crosses_top = previous_bottom <= platform.top and self.rect.bottom >= platform.top
+                if overlaps_x and crosses_top:
+                    self.rect.bottom = platform.top
+                    self.vy = 0.0
+                    self.on_ground = True
 
     def jump(self):
-        # STEP 3 — TODO: only if self.on_ground, set self.vy = self.JUMP
-        # and self.on_ground = False. Midair presses must not queue a jump.
-        pass
+        # STEP 3 — one jump, only from a surface.
+        if self.on_ground:
+            self.vy = self.JUMP
+            self.on_ground = False
 
     def choose_animation(self, direction, keys):
-        # STEP 4 — TODO: if not self.on_ground, select "jump" and return.
-        # Jump takes priority over idle/walk, even when no movement key is held.
+        # STEP 4 — being airborne wins over a held movement key.
+        if not self.on_ground:
+            self.set_animation("jump")
+            return
         # Supplied Week 9 behavior: optional input, remembered facing.
         if keys is not None:
             if direction != 0:
@@ -124,7 +155,8 @@ class Luffy:
             self.frame_index = int(self.animation_time * speed) % len(frames)
 
     def draw(self):
-        # Unchanged Week 9 pivot-aware drawing. No camera or physics here.
+        # Unchanged Week 9 pivot-aware drawing, at WORLD positions on the world
+        # surface. No camera maths here: the World's camera picks the view.
         frame = self.animations[self.animation][self.frame_index]
         image = frame["image"]
         foot_x, foot_y = frame["pivot"]

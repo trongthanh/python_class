@@ -1,4 +1,4 @@
-"""Week 10 sprite configuration: original idle/walk/jump rectangles and pivots.
+"""Sprite configuration, unchanged since Week 10: idle/walk/jump crops and pivots.
 
 Rect = source x, y, width, height. Pivot = local foot x, y inside that crop.
 fps = animation pictures per second, not game-loop redraws per second.
