@@ -1,4 +1,4 @@
-"""Week 11 STARTER — run main.py; fill the four numbered TODOs in this file.
+"""Week 11 STARTER — run main.py; fill the seven numbered TODO steps in this file.
 
 Like Week 7's Box Pusher, the World paints everything on its OWN canvas, then
 copies it to the screen. New this week: the canvas is the whole ship (1269 × 320
@@ -72,7 +72,9 @@ class World:
         self.player = Luffy(self.surface, x, feet, platforms=self.platforms,
                             floating_platforms=self.floating_platforms)
         # The camera is the part of the world we can see: exactly screen-sized.
-        self.camera = pygame.Rect(0, feet - 120, WIDTH, HEIGHT)
+        # STEP 2 — TODO: the camera starts at world (0, 0), above the ship.
+        # Change its top (the second number) to feet - 120.
+        self.camera = pygame.Rect(0, 0, WIDTH, HEIGHT)
         self.done = False
         self.follow_player()
 
@@ -84,37 +86,31 @@ class World:
         self.check_exit()
 
     def follow_player(self):
-        # STEP 1 — TODO: set self.camera.centerx to Luffy's rect.centerx.
-        # STEP 3 — TODO: set self.camera.top so Luffy's feet (rect.bottom)
-        # sit 120 pixels down the screen. Write it ABOVE the Step 2 line.
-        # STEP 2 — TODO: keep the camera inside the ship with clamp_ip(),
+        # STEP 3 — TODO: set self.camera.centerx to Luffy's rect.centerx.
+        # STEP 5 — TODO: set self.camera.top so Luffy's feet (rect.bottom)
+        # sit 120 pixels down the screen. Write it ABOVE the Step 4 line.
+        # STEP 4 — TODO: keep the camera inside the ship with clamp_ip(),
         # clamped to self.surface.get_rect(). Clamp is always LAST.
         pass
 
     def check_exit(self):
-        # STEP 4 — TODO: make gate = pygame.Rect(EXIT_GATE). If Luffy's rect
+        # STEP 7 — TODO: make gate = pygame.Rect(EXIT_GATE). If Luffy's rect
         # collides with it, set self.done = True. Both are in WORLD pixels.
         pass
 
     # --- Drawing: the world on its own surface, then one camera copy ---
 
     def draw(self, screen):
-        # 1. Paint the world at WORLD positions. No camera maths anywhere here.
-        self.surface.fill((0, 0, 0, 0))  # Wipe last frame: fully see-through.
-        self.surface.blit(self.background, (0, 0))
-        self.draw_exit()
-        self.player.draw()
+        self.draw_sky(screen)  # Supplied: the far sky, straight on the screen.
+        # STEP 1 — TODO: paint the world on self.surface, at WORLD positions:
+        # wipe it see-through: self.surface.fill((0, 0, 0, 0)), blit
+        # self.background at (0, 0), then let Luffy draw himself.
+        # STEP 7 — TODO: call self.draw_exit() just before Luffy draws.
         if self.debug:
-            self.draw_debug()
-        # 2. The far sky goes straight on the screen, behind everything.
-        #    Parallax, like Week 2's starfield: far things move slower. The
-        #    camera moves 5 pixels, the sky slides 1 (minus: opposite way).
-        sky_x = -self.camera.x // 5
-        sky_y = -self.camera.y // 5
-        screen.blit(self.sky, (sky_x, sky_y))
-        # 3. Copy only the camera's rectangle of the world on top of the sky.
-        screen.blit(self.surface, (0, 0), self.camera)
-        # 4. Screen things stay put while the ship scrolls behind them.
+            self.draw_debug()  # Supplied: collision boxes, on the world.
+        # STEP 1 — TODO: copy only the camera's part of the world onto the
+        # screen: blit self.surface at (0, 0), with self.camera as the area.
+        # Supplied: screen things stay put while the ship scrolls behind them.
         if self.show_map:
             self.draw_map(screen)
         if self.debug:
@@ -123,11 +119,30 @@ class World:
         if self.done:
             self.draw_banner(screen)
 
+    def draw_sky(self, screen):
+        # Supplied. Parallax, like Week 2's starfield: far things move slower.
+        # The camera moves 5 pixels, the sky slides 1 (minus: opposite way).
+        sky_x = -self.camera.x // 5
+        sky_y = -self.camera.y // 5
+        screen.blit(self.sky, (sky_x, sky_y))
+
+    def draw_coordinates(self, screen):
+        # F1. Luffy's feet in WORLD pixels: where he stands on the ship.
+        world_x = int(self.player.rect.centerx)
+        world_y = int(self.player.rect.bottom)
+        # STEP 6 — TODO: replace both 0s. Screen = world - camera.
+        # Then draw a yellow ring on the SCREEN at (screen_x, screen_y):
+        # pygame.draw.circle(screen, "yellow", (screen_x, screen_y), 4, 1)
+        screen_x = 0
+        screen_y = 0
+        self.draw_numbers(screen, world_x, world_y, screen_x, screen_y)
+
     def draw_exit(self):
-        gate = pygame.Rect(EXIT_GATE)
-        pygame.draw.rect(self.surface, "gold", gate, 2)
-        label = self.font.render("EXIT", True, "gold")
-        self.surface.blit(label, (gate.centerx - 9, gate.top - 10))
+        # STEP 7 — TODO: make gate = pygame.Rect(EXIT_GATE). Draw it as a gold
+        # frame on the WORLD surface: pygame.draw.rect(self.surface, "gold", gate, 2).
+        # Bonus: render "EXIT" with self.font and blit it on self.surface
+        # at (gate.centerx - 9, gate.top - 10).
+        pass
 
     # --- Supplied teacher tools: read later ---
 
@@ -138,12 +153,8 @@ class World:
         pygame.draw.rect(self.surface, "cyan", self.player.rect, 1)
         pygame.draw.circle(self.surface, "yellow", self.player.rect.midbottom, 2)
 
-    def draw_coordinates(self, screen):
-        # Screen position = world position - camera position.
-        world_x = int(self.player.rect.centerx)
-        world_y = int(self.player.rect.bottom)
-        screen_x = world_x - self.camera.x
-        screen_y = world_y - self.camera.y
+    def draw_numbers(self, screen, world_x, world_y, screen_x, screen_y):
+        # F1's three lines of numbers, fixed to the screen.
         lines = [
             "Luffy world: (" + str(world_x) + ", " + str(world_y) + ")",
             "Luffy screen: (" + str(screen_x) + ", " + str(screen_y) + ")",
@@ -154,7 +165,6 @@ class World:
             top = 58  # Below the shrunken map.
         for number, line in enumerate(lines):
             screen.blit(self.font.render(line, True, "white"), (4, top + number * 10))
-        pygame.draw.circle(screen, "yellow", (screen_x, screen_y), 4, 1)
 
     def draw_map(self, screen):
         # The whole world shrunk to the screen's width; yellow = the camera.
