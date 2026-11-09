@@ -11,10 +11,13 @@ ripper/curator credit for this particular supplied Luffy sheet has not been
 verified; do not attribute it to the rippers of other character sheets.
 No ownership or redistribution permission is claimed by this course.
 
-`ship_2.png` is an unchanged copy of
-`part_2/one_piece_game/game/assets/ship_2.png`, the full game's second playable
-scene: **source strip 3** of the original `Alvidas Ship.png`, credited to
-**Cabamanman**. 1269 × 320 pixels, with a transparent sky; picture colors are
+`ship_2.png` is a cropped copy of `part_2/one_piece_game/game/assets/ship_2.png`
+(as committed), the full game's second playable scene: **source strip 3** of the
+original `Alvidas Ship.png`, credited to **Cabamanman**. The 1269 × 320 original
+was cropped to **1266 × 303** (3 see-through columns off the right, 17 nearly
+empty rows off the bottom), its see-through column 0 filled from column 1 so
+floor x-coordinates are unchanged, and its 139 half-transparent pixels made
+solid. The sky stays transparent; picture colors are
 not collision data. The floor, ledge and exit numbers in `world.py` were traced
 from the red and green marks in
 `part_2/one_piece_game/game/assets/ship_2_guide.png`, a teacher reference that
