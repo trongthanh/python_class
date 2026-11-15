@@ -33,6 +33,16 @@ python3 main.py
 Các tệp đó là module được game sử dụng. Hướng dẫn và các mục `TODO` trong
 starter cho biết phần cần hoàn thành. Hãy sao lưu bài trước khi chỉnh sửa.
 
+## Starter tuần 12 — Hai kiểu đấm
+
+Tiếp tục luyện tập trên boong tàu của tuần 11. Học sinh hoàn thành 5 bước:
+cờ trạng thái phím và sự kiện J, đồng hồ hành động, hitbox trước mặt, kiểm tra
+trúng đòn một lần mỗi hành động, rồi sự kiện K với lấy đà/đấm xa/hủy sớm.
+
+J/K ban đầu chưa hoạt động: đây là phần học sinh sẽ tự viết. Pirate đứng yên
+để luyện hitbox, chưa có AI hoặc HP. R đặt lại bài tập; F1/F2 xem hitbox/camera.
+Bài này chưa có chuyển cảnh hoặc phím N/T.
+
 ## Các tệp trong dự án One Piece
 
 | Tệp / thư mục | Nội dung |
@@ -40,6 +50,7 @@ starter cho biết phần cần hoàn thành. Hãy sao lưu bài trước khi ch
 | `main.py` | Điểm khởi chạy game, vòng lặp và sự kiện cửa sổ |
 | `luffy.py` | Nhân vật Luffy, di chuyển và hoạt ảnh |
 | `world.py` | Cảnh game, mặt đất và camera; xuất hiện từ bài cuộn cảnh |
+| `enemy.py` | Pirate đứng yên, hitbox và phản hồi khi trúng đòn; từ tuần 12 |
 | `frames.py` | Cấu hình khung hình và điểm neo của sprite |
 | `spritesheet.py` | Cắt hình từ spritesheet và xử lý màu nền |
 | `assets/` | Hình ảnh và ghi chú nguồn; xem `assets/CREDITS.md` nếu có |
